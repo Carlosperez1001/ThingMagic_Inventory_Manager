@@ -35,6 +35,7 @@ namespace RFID_Demo
         public string RSSI { get; private set; }
 
         public int COM_Port = 0;
+        public bool toggelReader = false;
         public bool connectiveStatus = false;
         public ThingMagic.Reader reader;
         ObservableCollection<UnknownRFID> UnknownRFIDList = new ObservableCollection<UnknownRFID>();
@@ -45,8 +46,12 @@ namespace RFID_Demo
 
 
             InitializeComponent();
+            DateTime TodayDate = DateTime.Today;
 
             UnregisteredDataGrid.ItemsSource = UnknownRFIDList;
+
+            UnknownRFIDList.Add(new UnknownRFID(EPC = "0123456789012345", timeStamp = TodayDate.ToString(), RSSI = "-24"));
+
             updateConnectiveStatus();
 
 
@@ -58,7 +63,13 @@ namespace RFID_Demo
                 cbox_COM.IsEnabled = false;
                 btn_Connect.IsEnabled = false;
                 lbl_ConnectiveStatus.Content = "Idle";
+                if (toggelReader == true)
+                {
+                    Icon_ConnectiveStatus.Fill = new SolidColorBrush(Colors.Green);
+                    lbl_ConnectiveStatus.Content = "Scanning";
+                }
             }
+           
             else
             {
                 Icon_ConnectiveStatus.Fill = new SolidColorBrush(Colors.Red);
@@ -106,15 +117,11 @@ namespace RFID_Demo
 
         public void ReadBatchRFID()
         {
-            if (connectiveStatus == true)
+            if (connectiveStatus == true && toggelReader == true)
             {
                 try
                 {
 
-                    int timeout = 1000;
-
-
-                    float rssiPower = 0;
                     reader.StartReading();
                     reader.TagRead += OnTagRead;
 
@@ -132,12 +139,15 @@ namespace RFID_Demo
         }
 
         private void OnTagRead(Object sender, TagReadDataEventArgs e) {
+            if (toggelReader == true) {
+                return;
+            }
             bool existingTag = false;
             Console.WriteLine(e.TagReadData.EpcString + " " + e.TagReadData.Time.ToString() + " " + e.TagReadData.Rssi.ToString());
             
             if (UnknownRFIDList.Any(p => p.EPC == e.TagReadData.EpcString)) {
-                var file = UnknownRFIDList.First(f => f.EPC == e.TagReadData.EpcString) ;
-                var index = UnknownRFIDList.IndexOf(file);
+                var list = UnknownRFIDList.First(f => f.EPC == e.TagReadData.EpcString) ;
+                var index = UnknownRFIDList.IndexOf(list);
                 UnknownRFIDList[index].timeStamp = e.TagReadData.Time.ToString();
                 UnknownRFIDList[index].RSSI = e.TagReadData.Rssi.ToString();
                 Console.WriteLine("I have " + e.TagReadData.EpcString);
@@ -158,7 +168,14 @@ namespace RFID_Demo
 
         private void btn_Refresh_Click(object sender, RoutedEventArgs e)
         {
-           ReadBatchRFID();
+            if (toggelReader == false)
+            {
+                toggelReader = true;
+                ReadBatchRFID();
+            }
+            else {
+                toggelReader = false; 
+            }
         }
 
 
@@ -175,6 +192,8 @@ namespace RFID_Demo
 
         private void btn_AddItem_Click(object sender, RoutedEventArgs e)
         {
+            AddItem win2 = new AddItem();
+            win2.Show();
             Console.WriteLine("Check List");
             for (int i = 0; i < UnknownRFIDList.Count; i++)
             {

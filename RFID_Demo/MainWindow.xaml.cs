@@ -200,6 +200,11 @@ namespace RFID_Demo
                 Console.WriteLine(i+ "] " + string.Concat(UnknownRFIDList[i].EPC, "---", UnknownRFIDList[i].timeStamp));
             }
         }
+
+        private void UnregisteredDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
 

@@ -26,7 +26,7 @@
             <Button x:Name="btn_EditRFIDTag" Content="Edit RFID Tag" HorizontalAlignment="Left" Margin="10,0,0,9" Width="100" Click="btn_AddItem_Click" Height="32" VerticalAlignment="Bottom" Grid.Row="1" IsEnabled="False"/>
             <Button x:Name="btn_ToggleRead_Copy" Content="Clear" Margin="10,15,0,0" VerticalAlignment="Top" Height="32" Click="btn_Refresh_Click" RenderTransformOrigin="-1.465,1" HorizontalAlignment="Left" Width="50"/>
             <Button x:Name="btn_ToggleRead" Content="Start Reading" Margin="229,15,0,0" VerticalAlignment="Top" Height="32" Click="btn_Refresh_Click" HorizontalAlignment="Left" Width="100"/>
-            <DataGrid  x:Name="UnregisteredDataGrid" Margin="10,59.5,18,47" AutoGenerateColumns="False" SelectionChanged="UnregisteredDataGrid_SelectionChanged" Grid.Row="1"   >
+            <DataGrid  x:Name="UnregisteredDataGrid" Margin="10,61,18,46" AutoGenerateColumns="False"    >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="EPC" IsReadOnly="True" Binding="{Binding EPC}" Width="0.35*"></DataGridTextColumn>
                     <DataGridTextColumn Header="TimeStamp" IsReadOnly="True"  Binding="{Binding timeStamp}" Width="0.50*"></DataGridTextColumn>

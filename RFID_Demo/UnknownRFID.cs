@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using ThingMagic;
 
 namespace RFID_Demo
 {
@@ -13,13 +17,15 @@ namespace RFID_Demo
         public string _EPC;
         public string _timeStamp;
         public string _RSSI;
-
+        
         public UnknownRFID(String EPC, String timeStamp, String RSSI)
         {
             this.RSSI = RSSI;
             this.EPC = EPC;
             this.timeStamp = timeStamp; //RawTagData.Substring(44);
+           
             
+
 
         }
         public string EPC
@@ -39,14 +45,54 @@ namespace RFID_Demo
             set { _RSSI = value; }
          
         }
-    public void printRFID()
+
+    private static ObservableCollection<UnknownRFID> UnknownList = new ObservableCollection<UnknownRFID>();
+        public class UnknownRFIDList
         {
-          //  Console.WriteLine(this.EPC + "   " + this.timeStamp);
+
+
+            public static ObservableCollection<UnknownRFID> getUnknownRFIDList()
+            {
+                return UnknownList;
+            }
+        
+            public static void printUnknow() {
+                for (int i = 0; i < UnknownList.Count; i++)
+                {
+                    Console.WriteLine(string.Concat(UnknownList[i].EPC, "---", UnknownList[i].timeStamp));
+    }
+            }
+        public static void addUnknownRFIDItem(String EPC, String timeStamp, String RSSI)
+            {
+        
+                UnknownList.Add(new UnknownRFID(EPC = EPC, timeStamp = timeStamp.ToString(), RSSI = RSSI)) ;
+                 Console.WriteLine(EPC + "   " + timeStamp);
+            }
+
+            public static void RemoveUnknownRFIDItem(UnknownRFID selectedItem) {
+                UnknownList.Remove(UnknownList.Where(i => i.EPC == selectedItem.EPC).Single());
+     
+            }
+        
+            public static bool check(TagReadDataEventArgs e) {
+                if (UnknownList.Any(p => p.EPC == e.TagReadData.EpcString))
+                {
+                    var list = UnknownList.First(f => f.EPC == e.TagReadData.EpcString);
+                    var index = UnknownList.IndexOf(list);
+                    UnknownList[index].timeStamp = e.TagReadData.Time.ToString();
+                    UnknownList[index].RSSI = e.TagReadData.Rssi.ToString();
+                    Console.WriteLine("I have " + e.TagReadData.EpcString);
+                    return true;
+                }
+                else
+                {
+                   addUnknownRFIDItem(e.TagReadData.EpcString, e.TagReadData.Time.ToString(), e.TagReadData.Rssi.ToString());
+                    return false;
+                }
+                }
+            }
         }
 
-       
-    }
+        }
 
-
-}
 

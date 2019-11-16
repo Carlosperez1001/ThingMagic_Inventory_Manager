@@ -39,15 +39,25 @@
 
 
         <Grid Grid.Column="1" Background="Beige" Margin="5,0,0,0">
-            <DataGrid x:Name="dataGrid" Margin="18,105,10,47">
+            <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" SelectionChanged="dataGrid_SelectionChanged" AutoGenerateColumns="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Title" IsReadOnly="True" Width="0.35*"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Autor" IsReadOnly="True" Width="0.20*"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Filler" IsReadOnly="True" Width="0.35*"></DataGridTextColumn>
-                    <DataGridTextColumn Header="Filler" IsReadOnly="True" Width="0.35*"></DataGridTextColumn>
-                    <DataGridTextColumn Header="RSSI" IsReadOnly="True" Width="0.15*"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Title" IsReadOnly="True" Width="0.35*"  Binding="{Binding Title}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Autor" IsReadOnly="True" Width="0.20*"  Binding="{Binding Autor}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Genre" IsReadOnly="True" Width="0.15*"  Binding="{Binding Genre}" ></DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Image" IsReadOnly="True"  Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Image}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        
+                        </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="EPC" IsReadOnly="True" Width="0.15*"  Binding="{Binding EPC}" ></DataGridTextColumn>
+                    <DataGridTextColumn Header="TimeStamp" IsReadOnly="True" Width="0.15*"  Binding="{Binding timeStamp}" ></DataGridTextColumn>
+                    <DataGridTextColumn Header="RSSI" IsReadOnly="True" Width="0.15*"  Binding="{Binding RSSI}" ></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            
             <TextBox x:Name="textBox" Height="21" Margin="18,79,10,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <TextBox.RenderTransform>
                     <TransformGroup>
@@ -60,7 +70,7 @@
             </TextBox>
             <Button Content="Search" HorizontalAlignment="Left" Margin="18,42,0,0" VerticalAlignment="Top" Width="100" Height="32" IsEnabled="False"/>
             <Button x:Name="btn_AddItem_Copy" Content="Edit Item" Margin="0,0,10,10"  HorizontalAlignment="Right" Width="99" Height="32" VerticalAlignment="Bottom" IsEnabled="False"/>
-            <Button x:Name="btn_AddItem_Copy1" Content="Remove Item" Margin="0,0,150,10" HorizontalAlignment="Right" Width="100" Height="32" VerticalAlignment="Bottom" IsEnabled="False"/>
+            <Button x:Name="btn_RemoveItem" Content="Remove Item" Margin="0,0,151,10" HorizontalAlignment="Right" Width="100" Height="32" VerticalAlignment="Bottom" Click="btn_RemoveItem_Click"/>
 
             <Grid HorizontalAlignment="Right" Height="64" Margin="0,10,0,0" VerticalAlignment="Top" Width="358" Grid.Column="1">
                 <Ellipse x:Name="Icon_ConnectiveStatus" Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="42" Stroke="Black" VerticalAlignment="Top" Width="43" Margin="299,22,0,0" RenderTransformOrigin="-0.324,0.546"/>

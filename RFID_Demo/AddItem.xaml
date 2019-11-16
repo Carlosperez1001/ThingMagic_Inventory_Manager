@@ -5,35 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RFID_Demo"
         mc:Ignorable="d"
-        Title="AddItem" Height="550" Width="450">
+        ResizeMode="NoResize"
+        Title="AddItem" Height="548" Width="491">
 
-    <Grid>
-        <Grid Margin="0,86,2,216" HorizontalAlignment="Right" Width="440" ShowGridLines="True">
+    <Grid Margin="20,14,25,0" HorizontalAlignment="Center" Width="440" Height="497" VerticalAlignment="Top" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="44*"/>
+            <RowDefinition Height="318*"/>
+        </Grid.RowDefinitions>
+        <Grid Margin="0,28,0,37" ShowGridLines="True" Grid.Row="2" HorizontalAlignment="Right" Width="440">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="27*"></ColumnDefinition>
-                <ColumnDefinition Width="83*"></ColumnDefinition>
+                <ColumnDefinition Width="111*"></ColumnDefinition>
+                <ColumnDefinition Width="317*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions >
-                <RowDefinition Height=".25*"></RowDefinition>
-                <RowDefinition Height=".25*"></RowDefinition>
-                <RowDefinition Height=".25*"></RowDefinition>
-                <RowDefinition Height=".25*"></RowDefinition>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".20*"/>
+                <RowDefinition Height=".40*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Book Title:" Grid.Row="0" Grid.Column="0" FontSize="16" VerticalAlignment="Center"  Height="21" Margin="0,10,0,22" HorizontalAlignment="Right" Width="88"/>
-            <TextBox Text="Row 0 Column1" Grid.Row="0" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Height="23" Margin="5,9,10,21"/>
+            <Label Content="Book Title:" Grid.Row="0" Grid.Column="0" FontSize="16" Margin="0,10,0,6" HorizontalContentAlignment="Right"  Width="114" HorizontalAlignment="Left"/>
+            <TextBox x:Name="tbox_BookTitle" Text="" Grid.Row="0" FontSize="16" VerticalAlignment="Center" Height="24" Margin="0,16,0,12" HorizontalAlignment="Right" Width="326" Grid.ColumnSpan="2" Grid.Column="1"/>
 
-            <TextBlock Text="Book Title:" Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center"  Height="21" Margin="0,10,0,22" HorizontalAlignment="Right" Width="88"/>
-            <TextBox Text="Row 0 Column1" Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Height="23" Margin="5,9,10,21"/>
+            <Label Content="Autor" Grid.Row="1" Grid.Column="0" FontSize="16" Margin="0,10,0,6" HorizontalContentAlignment="Right"  Width="114" HorizontalAlignment="Left"/>
+            <TextBox x:Name="tbox_Autor" Text="" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Height="24" Margin="0,13,0,14" Grid.Row="1" Grid.ColumnSpan="2"/>
 
-            <TextBlock Text="Book Title:" Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center"  Height="21" Margin="0,10,0,22" HorizontalAlignment="Right" Width="88"/>
-            <TextBox Text="Row 0 Column1" Grid.Row="2" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Height="23" Margin="5,9,10,21"/>
+            <Label Content="Genre" Grid.Row="2" Grid.Column="0" FontSize="16" Margin="0,10,0,6" HorizontalContentAlignment="Right"  Width="114" HorizontalAlignment="Left"/>
+
+            <Label Content="Image:" Grid.Row="3" Grid.Column="0" FontSize="16" Margin="0,10,0,70" HorizontalContentAlignment="Right"  Width="114" HorizontalAlignment="Left"/>
+
+            <Image Margin="10,3,214,10" Name="imgPhoto" Stretch="Fill" Grid.Column="1" Grid.Row ="3" Width="100" Height="100"/>
+
+            <ComboBox x:Name="cbox_Genre" Grid.Column="1" HorizontalAlignment="Left" Margin="0,15,0,0" Grid.Row="2" VerticalAlignment="Top" Width="216" Height="22">
+
+                <ComboBoxItem >Action and adventure</ComboBoxItem>
+                <ComboBoxItem>Art</ComboBoxItem>
+                <ComboBoxItem>Biogaghy</ComboBoxItem>
+                <ComboBoxItem>Drama</ComboBoxItem>
+                <ComboBoxItem>Fantasy</ComboBoxItem>
+                <ComboBoxItem>Graphic Novel</ComboBoxItem>
+                <ComboBoxItem>History</ComboBoxItem>
+                <ComboBoxItem>Mystery</ComboBoxItem>
+                <ComboBoxItem>Science</ComboBoxItem>
+            </ComboBox>
+
+            <Button Name="btn_UploadImage" Content="Upload" Click="btn_UploadImage_Click" HorizontalAlignment="Left" Margin="39,43,0,0" Grid.Row="3" VerticalAlignment="Top" Width="75"/>
+
 
         </Grid>
-        <Label Content="Selected Item" HorizontalAlignment="Left" Height="24" Margin="10,10,0,0" VerticalAlignment="Top" Width="81"/>
-        <Label x:Name="lbl_SelectedEPC" Content="EPC:" HorizontalAlignment="Left" Height="24" Margin="10,34,0,0" VerticalAlignment="Top" Width="192"/>
-        <Label x:Name="lbl_SelectedTimeStamp" Content="Timestamp:" HorizontalAlignment="Left" Height="24" Margin="223,34,0,0" VerticalAlignment="Top" Width="154"/>
-        <Button x:Name="btn_SubmitNewItem" Content="Button" Margin="179,489,188,0" VerticalAlignment="Top" Click="btn_SubmitNewItem_Click"/>
 
+        <Grid HorizontalAlignment="Left" Height="89" VerticalAlignment="Top" Width="440" Background="Aqua">
+            <Label Content="Selected Item Details" HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="171"/>
+            <Label x:Name="lbl_SelectedEPC" Content="EPC:" HorizontalAlignment="Left" Height="24" Margin="0,23,0,0" VerticalAlignment="Top" Width="207"/>
+            <Label x:Name="lbl_SelectedTimeStamp" Content="Timestamp:" HorizontalAlignment="Left" Height="24" Margin="0,42,0,0" VerticalAlignment="Top" Width="207"/>
+            <Label x:Name="lbl_SelectedRSSI" Content="RSSI:" HorizontalAlignment="Left" Height="24" Margin="0,65,0,0" VerticalAlignment="Top" Width="207"/>
+
+        </Grid>
+        <Button x:Name="btn_SubmitNewItem" Content="Submit" Margin="144,0,136,10" VerticalAlignment="Bottom" Click="btn_SubmitNewItem_Click" Height="22" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" Grid.Row="2" Width="160"/>
+        <Label Content="Select the type of item" VerticalAlignment="Top" Margin="107,0,106,0" HorizontalContentAlignment="Center" FontSize="20" Grid.Row="1"/>
+        <DockPanel Height="27" LastChildFill="False" Margin="136,1,136,0" Grid.Row="2" VerticalAlignment="Top">
+            <RadioButton  IsChecked="True" Content="Book" Height="27" VerticalAlignment="Top" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
+            <RadioButton Content="Hardware" Height="27" Margin="50,0,0,0" VerticalAlignment="Top" Width="72"/>
+        </DockPanel>
     </Grid>
 </Window>

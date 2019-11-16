@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using ThingMagic;
+using static RFID_Demo.Itembook;
 
 namespace RFID_Demo
 {
@@ -22,17 +23,13 @@ namespace RFID_Demo
         {
             this.RSSI = RSSI;
             this.EPC = EPC;
-            this.timeStamp = timeStamp; //RawTagData.Substring(44);
-           
-            
-
+            this.timeStamp = timeStamp; 
 
         }
         public string EPC
         { 
             get { return _EPC; }
             set { _EPC = value; }
-           
         }
         public string timeStamp {
             get { return _timeStamp; }
@@ -46,10 +43,11 @@ namespace RFID_Demo
          
         }
 
-    private static ObservableCollection<UnknownRFID> UnknownList = new ObservableCollection<UnknownRFID>();
+        private static ObservableCollection<UnknownRFID> UnknownList = new ObservableCollection<UnknownRFID>();
+
         public class UnknownRFIDList
         {
-
+          
 
             public static ObservableCollection<UnknownRFID> getUnknownRFIDList()
             {
@@ -74,14 +72,19 @@ namespace RFID_Demo
      
             }
         
-            public static bool check(TagReadDataEventArgs e) {
+            public static bool CheckList(TagReadDataEventArgs e) {
+                //
+                if (BookListing.getBookList().Any(p => p.EPC == e.TagReadData.EpcString))
+                {
+                    return false;
+                }
+
                 if (UnknownList.Any(p => p.EPC == e.TagReadData.EpcString))
                 {
                     var list = UnknownList.First(f => f.EPC == e.TagReadData.EpcString);
                     var index = UnknownList.IndexOf(list);
                     UnknownList[index].timeStamp = e.TagReadData.Time.ToString();
                     UnknownList[index].RSSI = e.TagReadData.Rssi.ToString();
-                    Console.WriteLine("I have " + e.TagReadData.EpcString);
                     return true;
                 }
                 else

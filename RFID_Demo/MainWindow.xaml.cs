@@ -20,6 +20,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using DataGrid = System.Windows.Controls.DataGrid;
 using System.Collections.ObjectModel;
 using static RFID_Demo.UnknownRFID;
+using static RFID_Demo.Itembook;
 using System.Windows.Threading;
 
 namespace RFID_Demo
@@ -50,8 +51,12 @@ namespace RFID_Demo
 
                 //Test data when hardware is unavailable 
                 DateTime TodayDates =  DateTime.Now;
+                dg_BookTable.ItemsSource = BookListing.getBookList();
+
                 UnregisteredDataGrid.ItemsSource = UnknownRFIDList.getUnknownRFIDList();
-           
+                
+            //Debugging test data
+
                  UnknownRFIDList.addUnknownRFIDItem("2313213123213222", TodayDates.ToString(), "-24");
             
            
@@ -104,7 +109,7 @@ namespace RFID_Demo
 
         private void btn_AddItem_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Help");
+         
             UnknownRFID selectedItem = (UnknownRFID)UnregisteredDataGrid.SelectedItem;
             if (selectedItem != null)
             {
@@ -117,18 +122,29 @@ namespace RFID_Demo
                 MessageBox.Show("Please select an unregistered item above");
                     }
         }
+        private void btn_RemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            Itembook selectedItem = (Itembook)dg_BookTable.SelectedItem;
+            if (selectedItem != null)
+            {
+                BookListing.RemoveBookItem(selectedItem);
+            }
+            else
+            {
+                MessageBox.Show("Please select an item to remove");
+            }
+        }
 
-      
 
-        //----------RFID Module Functions Section----------//
+            //----------RFID Module Functions Section----------//
 
 
-        /// <summary>
-        /// Establishes a proper connection with the system and M6e Module. 
-        /// Config module settings such as [antenna port, region,tag reading/writing protocol]
-        /// Creates a "Reader" object from the Mecury API
-        /// </summary>
-        public void ConnectRFID()
+            /// <summary>
+            /// Establishes a proper connection with the system and M6e Module. 
+            /// Config module settings such as [antenna port, region,tag reading/writing protocol]
+            /// Creates a "Reader" object from the Mecury API
+            /// </summary>
+            public void ConnectRFID()
         {
             {
                 try
@@ -182,14 +198,25 @@ namespace RFID_Demo
             {
                 return;
             }
-            UnknownRFIDList.printUnknow();
-            bool checkpls = false;
+
+           
+            bool check_Known = false;
+            bool check_Unknown = false;
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
              DispatcherPriority.Background,
             new Action(() => {
-             checkpls =  UnknownRFIDList.check(e);
+                check_Known = BookListing.CheckList(e);
+                check_Unknown =  UnknownRFIDList.CheckList(e);
+
              }));
-            if(checkpls == true) { }
+
+            if (check_Known == true) { }
+            this.Dispatcher.Invoke(() =>
+            {
+                dg_BookTable.Items.Refresh();
+            });
+
+            if (check_Unknown == true) { }
                 this.Dispatcher.Invoke(() =>
                 {
                     UnregisteredDataGrid.Items.Refresh();
@@ -197,7 +224,13 @@ namespace RFID_Demo
 
             }
 
+        private void dataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
+
+      
+    }
 
     }
 

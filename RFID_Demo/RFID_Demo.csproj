@@ -84,7 +84,6 @@
     </Compile>
     <Compile Include="Helper\DBHelper.cs" />
     <Compile Include="Objects\Itembook.cs" />
-    <Compile Include="DA Layer\ItembookDA.cs" />
     <Compile Include="Objects\UnknownRFID.cs" />
     <Compile Include="View Layer\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

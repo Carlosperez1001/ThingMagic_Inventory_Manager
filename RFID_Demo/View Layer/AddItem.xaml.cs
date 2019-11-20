@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace RFID_Demo
     public partial class AddItem : Window
     {
         UnknownRFID selectedItem;
+            byte[] imageData;
 
         public AddItem(UnknownRFID selectedItem)
         {
@@ -44,8 +46,8 @@ namespace RFID_Demo
           //  UnknownRFIDList.RemoveUnknownRFIDItem(selectedItem);
                 //Add new ItemBook object
                 //CheckInput
-                DBHelper.addBookQuery(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imgPhoto.Source);
-                //BookListing.addBooktem(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imgPhoto.Source);
+                DBHelper.addBookQuery(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imageData);
+                BookListing.addBookItem(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imageData);
                 BookListing.printBookList();
                 this.Close(); 
             }
@@ -90,10 +92,26 @@ namespace RFID_Demo
                   "Portable Network Graphic (*.png)|*.png";
                 if (op.ShowDialog() ==System.Windows.Forms.DialogResult.OK)
                 {
-                    imgPhoto.Source = new BitmapImage(new Uri(op.FileName));
+                    BitmapImage img = new BitmapImage(new Uri(op.FileName));
+                    imgPhoto.Source = img;
+                    imageData = ImageSourceToBytes(img);
                 }
 
             }
         }
+
+        public byte[] ImageSourceToBytes(BitmapImage imageSource)
+        {
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(imageSource));
+            using (MemoryStream ms = new MemoryStream())
+            {
+                encoder.Save(ms);
+                byte[] data = ms.ToArray();
+                return data;
+            }
+        }
+        }
+
     }
-}
+

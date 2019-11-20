@@ -115,12 +115,21 @@ namespace RFID_Demo
             public static bool CheckList(TagReadDataEventArgs e)
             {
                 //Check dt if EPC already exist. 
+
+    
                 DataTable dt = DBHelper.GetDT();
-                DataRow[] foundEPC = dt.Select("Book_RFID_EPC = '" + e.TagReadData.EpcString + "'");
-                if (foundEPC.Length != 0)
+                foreach (DataRow row in dt.Rows)
                 {
-                    return false;
+                    if (row["Book_RFID_EPC"].ToString() == e.TagReadData.EpcString)
+                    {
+                        DBHelper.updateBook(e);
+                        Console.WriteLine("Update call from checklist");
+                        loadBook();
+                        return false;
+                      
+                    }
                 }
+
                  
 
                 if (UnknownList.Any(p => p.EPC == e.TagReadData.EpcString))

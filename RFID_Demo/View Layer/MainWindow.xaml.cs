@@ -11,6 +11,7 @@ using static RFID_Demo.UnknownRFID;
 using static RFID_Demo.Itembook;
 using System.Windows.Threading;
 using System.Collections;
+using System.IO;
 
 namespace RFID_Demo
 {
@@ -46,8 +47,13 @@ namespace RFID_Demo
             UnregisteredDataGrid.ItemsSource = UnknownRFIDList.getUnknownRFIDList();    //Setup unregistered RFID datagrid
             DataTable booksDT = new DataTable();
             DBHelper.UpdateBookTable();
+
             booksDT = DBHelper.GetDT();
-            dg_BookTable.DataContext = booksDT;
+
+            dg_BookTable.ItemsSource = BookListing.getBookList();
+           
+             loadBook();
+          
 
 
 
@@ -60,8 +66,18 @@ namespace RFID_Demo
             //Set up UI
             updateConnectiveStatus();
         }
-        public void FixBookDT()
+
+
+
+        public static System.Drawing.Image byteArrayToImage(byte[] byteArrayIn)
         {
+            if (byteArrayIn != null || byteArrayIn.Length != 0)
+            {
+                MemoryStream ms = new MemoryStream(byteArrayIn);
+                System.Drawing.Image returnImage = System.Drawing.Image.FromStream(ms);
+                return returnImage;
+            }
+            return null;
         }
 
         //------------ UI, Button, Events, General Purpose Functions Section ------------//
@@ -147,25 +163,25 @@ namespace RFID_Demo
 
         private void btn_RemoveItem_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine(dg_BookTable.GetType());
             try
             {
-                if (dg_BookTable.SelectedItems[0] != null)
+                Itembook rows = dg_BookTable.SelectedItem as Itembook;
+
+
+                if (rows != null)
                 {
-                    DataRowView rows = (DataRowView)dg_BookTable.SelectedItems[0];
 
-                    if (rows != null)
-                    {
-
-                        Console.WriteLine(rows["Book_RFID_EPC"]);
-
-                        DBHelper.RemoveBookQuery(rows["Book_RFID_EPC"].ToString());
-                    }
-
-                    else
-                    {
-                        MessageBox.Show("Please select an item to remove");
-                    }
+                    Console.WriteLine(rows.EPC);
+                    DBHelper.RemoveBookQuery(rows.EPC.ToString());
+                    loadBook();
                 }
+
+                else
+                {
+                    MessageBox.Show("Please select an item to remove");
+                }
+
             }
             catch (Exception ex)
             {
@@ -173,8 +189,8 @@ namespace RFID_Demo
                 Console.WriteLine(ex);
             }
         }
-      
-    
+
+
         private void dg_BookTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
@@ -243,23 +259,18 @@ namespace RFID_Demo
                 return;
             }
 
-            bool check_Known = false;
+            
             bool check_Unknown = false;
 
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
              DispatcherPriority.Background,
             new Action(() =>
             {
-                check_Known = BookListing.CheckList(e);
+
                 check_Unknown = UnknownRFIDList.CheckList(e);
 
             }));
 
-            if (check_Known == true) { }
-            this.Dispatcher.Invoke(() =>
-            {
-                dg_BookTable.Items.Refresh();
-            });
 
             if (check_Unknown == true) { }
             this.Dispatcher.Invoke(() =>

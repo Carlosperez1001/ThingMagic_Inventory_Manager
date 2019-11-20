@@ -39,10 +39,25 @@
 
 
         <Grid Grid.Column="1" Background="Beige" Margin="5,0,0,0">
-            <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" ItemsSource="{Binding}" SelectionChanged="dg_BookTable_SelectionChanged" >
-                
+            <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" ItemsSource="{Binding}" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Book Title" Binding="{Binding Title }"/>
+                    <DataGridTextColumn Header="Book Title" Binding="{Binding Title }"/>
+                  
+                    <DataGridTemplateColumn Header="Image" Width="100" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image x:Name="img_Book" Source="{Binding Image }"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="EPC" Binding="{Binding EPC }"/>
+                    <DataGridTextColumn Header="EPC" Binding="{Binding timeStamp }"/>
+                    <DataGridTextColumn Header="EPC" Binding="{Binding RSSI }"/>
+                </DataGrid.Columns>
+           
             </DataGrid>
-            
+
             <TextBox x:Name="textBox" Height="21" Margin="18,79,10,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
                 <TextBox.RenderTransform>
                     <TransformGroup>

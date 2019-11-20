@@ -1,11 +1,16 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using ThingMagic;
 using static System.Net.Mime.MediaTypeNames;
+using Image = System.Drawing.Image;
 
 namespace RFID_Demo
 {
@@ -16,7 +21,10 @@ namespace RFID_Demo
         private static MySqlConnection connection;
         private static MySqlCommand cmd = null;
         private static MySqlDataAdapter da;
+        private static DataSet ds;
         public static DataTable dt = new DataTable();
+        public static DataTable dtCloned = new DataTable();
+
         private static MySqlDataAdapter sda;
 
         /// <summary>
@@ -26,6 +34,8 @@ namespace RFID_Demo
         {
             try
             {
+              
+
                 MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
                 builder.Server = "127.0.0.1";
                 builder.UserID = "root";
@@ -34,7 +44,8 @@ namespace RFID_Demo
                 builder.SslMode = MySqlSslMode.None;
 
                 connection = new MySqlConnection(builder.ToString());
-                connection.Open();
+              
+                MessageBox.Show("Connected");
             }
             catch (Exception ex)
             {
@@ -53,27 +64,33 @@ namespace RFID_Demo
             string query = "Select Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI from books";
             try
             {
-                if (connection != null)
+                if (connection != null && connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
                     cmd = new MySqlCommand(query, connection);
                     da = new MySqlDataAdapter(cmd);
+                    ds = new DataSet();
+
+                    
+                 
                     da.Fill(dt);
+
                     connection.Close();
                 }
             }
+
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
 
             }
         }
-
+       
 
         /// <summary>
         /// 
         /// </summary>
-        public static void addBookQuery(string EPC, string TimeStamp, string RSSI, string Book_Title, string Book_Autor, string Book_Genre, ImageSource source)
+        public static void addBookQuery(string EPC, string TimeStamp, string RSSI, string Book_Title, string Book_Autor, string Book_Genre, Byte[] source)
         {
             MemoryStream ms = new MemoryStream();
             byte[] img = ms.ToArray();
@@ -82,7 +99,7 @@ namespace RFID_Demo
                 "VALUE(@Book_id, @Book_Title, @Book_Autor, @Book_Genre, @Book_Image, @Book_RFID_EPC, @Book_RFID_TimeStamp, @Book_RFID_RSSI)";
             try
             {
-                if (connection != null)
+                if (connection != null && connection.State == ConnectionState.Closed)
                 {
                     connection.Open();
                     cmd = new MySqlCommand(query, connection);
@@ -129,10 +146,11 @@ namespace RFID_Demo
         /// </summary>
         public static void RemoveBookQuery(string EPC)
         {
-            connection.Open();
+            
             String query = "DELETE FROM books Where Book_RFID_EPC = '" + EPC + "'";
-            if (connection != null)
+            if (connection != null && connection.State == ConnectionState.Closed)
             {
+                connection.Open();
                 cmd = new MySqlCommand(query, connection);
 
                 if (cmd.ExecuteNonQuery() == 1)
@@ -144,13 +162,43 @@ namespace RFID_Demo
             }
         }
 
+        public static void updateBook(TagReadDataEventArgs e) {
+            String query = "Update books SET Book_RFID_TimeStamp = @Book_RFID_TimeStamp, Book_RFID_RSSI = @Book_RFID_RSSI where Book_RFID_EPC = '" + e.TagReadData.EpcString+"'";
+            try
+            {
+                if(connection.State == ConnectionState.Open)
+                {
+                    Console.WriteLine("Wy");
+                }
+                if (connection != null && connection.State == ConnectionState.Closed)
+                {
+                   Console.WriteLine("I should be updating");
+                    connection.Open();
+                    cmd = new MySqlCommand(query, connection);
+             
+                    cmd.Parameters.AddWithValue("@Book_RFID_TimeStamp", e.TagReadData.Time.ToString());
+                    cmd.Parameters.AddWithValue("@Book_RFID_RSSI", e.TagReadData.Rssi.ToString());
+                    cmd.ExecuteNonQuery();
+
+                    connection.Close();
+                    UpdateBookTable();
+                }
+                
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex);
+            }
+
+
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public static DataTable GetDT()
-        {
-            return dt;
+        public static DataTable GetDT() {
+
+            return dt ;
         }
 
     }

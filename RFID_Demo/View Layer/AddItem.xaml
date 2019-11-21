@@ -65,10 +65,6 @@
 
         </Grid>
         <Button x:Name="btn_SubmitNewItem" Content="Submit" Margin="144,0,136,10" VerticalAlignment="Bottom" Click="btn_SubmitNewItem_Click" Height="22" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" Grid.Row="2" Width="160"/>
-        <Label Content="Select the type of item" VerticalAlignment="Top" Margin="107,0,106,0" HorizontalContentAlignment="Center" FontSize="20" Grid.Row="1"/>
-        <DockPanel Height="27" LastChildFill="False" Margin="136,1,136,0" Grid.Row="2" VerticalAlignment="Top">
-            <RadioButton  IsChecked="True" Content="Book" Height="27" VerticalAlignment="Top" HorizontalAlignment="Center" HorizontalContentAlignment="Center"/>
-            <RadioButton Content="Hardware" Height="27" Margin="50,0,0,0" VerticalAlignment="Top" Width="72"/>
-        </DockPanel>
+        <Label Content="Enter Book's Information" VerticalAlignment="Top" Margin="107,0,106,0" HorizontalContentAlignment="Center" FontSize="20" Grid.Row="1"/>
     </Grid>
 </Window>

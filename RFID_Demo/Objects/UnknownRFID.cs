@@ -138,6 +138,7 @@ namespace RFID_Demo
                     var index = UnknownList.IndexOf(list);
                     UnknownList[index].timeStamp = e.TagReadData.Time.ToString();
                     UnknownList[index].RSSI = e.TagReadData.Rssi.ToString();
+                    Console.WriteLine("I have " + e.TagReadData.EpcString);
                     return true;
                 }
                 else

@@ -23,7 +23,6 @@
 
             <Label x:Name="lbl_Unregistered_Item" Content="Unregistered RFID Tags" Margin="60,21,0,0" VerticalAlignment="Top" Height="26" HorizontalAlignment="Left" Width="145"/>
             <Button x:Name="btn_AddItem" Content="Add Item" Margin="0,0,18,10" Click="btn_AddItem_Click" HorizontalAlignment="Right" Width="99" Height="32" VerticalAlignment="Bottom" Grid.Row="1"/>
-            <Button x:Name="btn_EditRFIDTag" Content="Edit RFID Tag" HorizontalAlignment="Left" Margin="10,0,0,9" Width="100" Click="btn_AddItem_Click" Height="32" VerticalAlignment="Bottom" Grid.Row="1" IsEnabled="False"/>
             <Button x:Name="btn_ClearUnregistered" Content="Clear" Margin="10,15,0,0" VerticalAlignment="Top" Height="32"  RenderTransformOrigin="-1.465,1" HorizontalAlignment="Left" Width="50" Click="btn_ClearUnregistered_click"/>
             <Button x:Name="btn_ToggleRead" Content="Start Reading" Margin="229,15,0,0" VerticalAlignment="Top" Height="32" Click="btn_StartScanning_Click" HorizontalAlignment="Left" Width="100"/>
             <DataGrid  x:Name="UnregisteredDataGrid" Margin="10,61,18,46" AutoGenerateColumns="False"    >
@@ -42,7 +41,7 @@
             <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" ItemsSource="{Binding}" AutoGenerateColumns="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Book Title" Binding="{Binding Title }"/>
-                    <DataGridTextColumn Header="Book Title" Binding="{Binding Title }"/>
+                    <DataGridTextColumn Header="Book Autor" Binding="{Binding Autor }"/>
                   
                     <DataGridTemplateColumn Header="Image" Width="100" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
@@ -51,9 +50,11 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Genre" Binding="{Binding Genre }"/>
                     <DataGridTextColumn Header="EPC" Binding="{Binding EPC }"/>
-                    <DataGridTextColumn Header="EPC" Binding="{Binding timeStamp }"/>
-                    <DataGridTextColumn Header="EPC" Binding="{Binding RSSI }"/>
+
+                    <DataGridTextColumn Header="TimeStamp" Binding="{Binding timeStamp }"/>
+                    <DataGridTextColumn Header="RSSI" Binding="{Binding RSSI }"/>
                 </DataGrid.Columns>
            
             </DataGrid>

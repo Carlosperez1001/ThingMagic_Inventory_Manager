@@ -51,9 +51,9 @@ namespace RFID_Demo
             booksDT = DBHelper.GetDT();
 
             dg_BookTable.ItemsSource = BookListing.getBookList();
-           
-             loadBook();
-          
+
+            loadBook();
+
 
 
 
@@ -155,12 +155,19 @@ namespace RFID_Demo
                 MessageBox.Show("Please select an unregistered item above");
             }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void btn_ClearUnregistered_click(object sender, RoutedEventArgs e)
         {
             UnknownRFIDList.RemoveALL();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void btn_RemoveItem_Click(object sender, RoutedEventArgs e)
         {
             Console.WriteLine(dg_BookTable.GetType());
@@ -191,10 +198,6 @@ namespace RFID_Demo
         }
 
 
-        private void dg_BookTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
-
 
         //----------RFID Module Functions Section----------//
 
@@ -218,7 +221,7 @@ namespace RFID_Demo
                     string str = "1,1";
                     antennaList = Array.ConvertAll(str.Split(','), int.Parse);     //Select antenna 1
 
-                    SimpleReadPlan plan = new SimpleReadPlan(antennaList, TagProtocol.GEN2, null, null, 1000);  //Create "Plan" for module configuration 
+                    SimpleReadPlan plan = new SimpleReadPlan(antennaList, TagProtocol.GEN2, null, null, 0);  //Create "Plan" for module configuration 
                     reader.ParamSet("/reader/read/plan", plan);
 
                     connectiveStatus = true;
@@ -258,26 +261,25 @@ namespace RFID_Demo
             {
                 return;
             }
-
-            
+           
             bool check_Unknown = false;
 
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
              DispatcherPriority.Background,
             new Action(() =>
             {
-
-                check_Unknown = UnknownRFIDList.CheckList(e);
-
+                check_Unknown = UnknownRFIDList.CheckList(e);   //[Bool] Check if tag is saved already.
+                if (check_Unknown == true)                      //Marked as "Unknown" update infomation.
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        UnregisteredDataGrid.Items.Refresh();   //Update UI 
+                    });
+                
+                }
             }));
 
-
-            if (check_Unknown == true) { }
-            this.Dispatcher.Invoke(() =>
-            {
-                UnregisteredDataGrid.Items.Refresh();
-            });
-
+            
         }
 
 

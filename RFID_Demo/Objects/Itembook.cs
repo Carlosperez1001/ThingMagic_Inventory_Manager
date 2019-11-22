@@ -76,8 +76,18 @@ namespace RFID_Demo
             set { _Image = value; }
         }
 
+        public static void UpdateBook_DG(TagReadDataEventArgs e)
+        {
+            if (BookList.Any(p => p.EPC == e.TagReadData.EpcString))
+            {
+                var list = BookList.First(f => f.EPC == e.TagReadData.EpcString);
+                var index = BookList.IndexOf(list);
+                BookList[index].timeStamp = e.TagReadData.Time.ToString();
+                BookList[index].RSSI = e.TagReadData.Rssi.ToString();
+               
+            }
 
-
+        }
         public static void loadBook()
         {
             DataTable booksDT = new DataTable();
@@ -142,7 +152,7 @@ namespace RFID_Demo
                 public static void addBookItem(String EPC, String timeStamp, String RSSI, string Title, string Autor, string Genre, Byte[] Image)
             {
                 BookList.Add(new Itembook(EPC = EPC, timeStamp = timeStamp.ToString(), RSSI = RSSI, Title = Title, Autor= Autor, Genre = Genre,  Image = Image));
-                Console.WriteLine(EPC + "   " + timeStamp);
+           
             }
 
 
@@ -154,6 +164,15 @@ namespace RFID_Demo
             }
             public static bool CheckList(TagReadDataEventArgs e)
             {
+                DataTable dt = DBHelper.GetDT();
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row["Book_RFID_EPC"].ToString() == e.TagReadData.EpcString)
+                    {
+                        DBHelper.updateBook(e);
+                        Console.WriteLine("Update Book call from checklist");  
+                    }
+                }
                 if (BookList.Any(p => p.EPC == e.TagReadData.EpcString))
                 {
                     var list = BookList.First(f => f.EPC == e.TagReadData.EpcString);

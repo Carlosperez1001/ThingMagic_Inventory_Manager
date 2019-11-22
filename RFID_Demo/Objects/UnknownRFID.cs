@@ -115,19 +115,9 @@ namespace RFID_Demo
             public static bool CheckList(TagReadDataEventArgs e)
             {
                 //Check dt if EPC already exist. 
-
-    
-                DataTable dt = DBHelper.GetDT();
-                foreach (DataRow row in dt.Rows)
+                if (BookListing.getBookList().Any(p => p.EPC == e.TagReadData.EpcString))
                 {
-                    if (row["Book_RFID_EPC"].ToString() == e.TagReadData.EpcString)
-                    {
-                        DBHelper.updateBook(e);
-                        Console.WriteLine("Update call from checklist");
-                        loadBook();
-                        return false;
-                      
-                    }
+                    return false;
                 }
 
                  
@@ -138,7 +128,7 @@ namespace RFID_Demo
                     var index = UnknownList.IndexOf(list);
                     UnknownList[index].timeStamp = e.TagReadData.Time.ToString();
                     UnknownList[index].RSSI = e.TagReadData.Rssi.ToString();
-                    Console.WriteLine("I have " + e.TagReadData.EpcString);
+                    Console.WriteLine("[Update Unknown Tag] "  + e.TagReadData.EpcString + e.TagReadData.Time.ToString() + " -  " + e.TagReadData.Rssi);
                     return true;
                 }
                 else

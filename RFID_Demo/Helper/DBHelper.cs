@@ -37,10 +37,10 @@ namespace RFID_Demo
               
 
                 MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
-                builder.Server = "127.0.0.1";
-                builder.UserID = "root";
-                builder.Password = "12345";
-                builder.Database = "item_book";
+                builder.Server = "aws-instance.chisnihuqkko.us-east-2.rds.amazonaws.com";
+                builder.UserID = "admin";
+                builder.Password = "password";
+                builder.Database = "items";
                 builder.SslMode = MySqlSslMode.None;
 
                 connection = new MySqlConnection(builder.ToString());
@@ -61,7 +61,7 @@ namespace RFID_Demo
         public static void UpdateBookTable()
         {
             dt.Clear();
-            string query = "Select Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI from books";
+            string query = "Select Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI from Book";
             try
             {
                 if (connection != null && connection.State == ConnectionState.Closed)
@@ -71,8 +71,6 @@ namespace RFID_Demo
                     da = new MySqlDataAdapter(cmd);
                     ds = new DataSet();
 
-                    
-                 
                     da.Fill(dt);
 
                     connection.Close();
@@ -95,7 +93,7 @@ namespace RFID_Demo
             MemoryStream ms = new MemoryStream();
             byte[] img = ms.ToArray();
 
-            String query = "INSERT INTO books (Book_id, Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI) " +
+            String query = "INSERT INTO Book (Book_id, Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI) " +
                 "VALUE(@Book_id, @Book_Title, @Book_Autor, @Book_Genre, @Book_Image, @Book_RFID_EPC, @Book_RFID_TimeStamp, @Book_RFID_RSSI)";
             try
             {
@@ -147,7 +145,7 @@ namespace RFID_Demo
         public static void RemoveBookQuery(string EPC)
         {
             
-            String query = "DELETE FROM books Where Book_RFID_EPC = '" + EPC + "'";
+            String query = "DELETE FROM Book Where Book_RFID_EPC = '" + EPC + "'";
             if (connection != null && connection.State == ConnectionState.Closed)
             {
                 connection.Open();
@@ -163,25 +161,21 @@ namespace RFID_Demo
         }
 
         public static void updateBook(TagReadDataEventArgs e) {
-            String query = "Update books SET Book_RFID_TimeStamp = @Book_RFID_TimeStamp, Book_RFID_RSSI = @Book_RFID_RSSI where Book_RFID_EPC = '" + e.TagReadData.EpcString+"'";
-            try
-            {
-                if(connection.State == ConnectionState.Open)
-                {
-                    Console.WriteLine("Wy");
-                }
+            String query = "Update Book SET Book_RFID_TimeStamp = @Book_RFID_TimeStamp, Book_RFID_RSSI = @Book_RFID_RSSI where Book_RFID_EPC = '" + e.TagReadData.EpcString+"'";
+            try { 
+ 
                 if (connection != null && connection.State == ConnectionState.Closed)
                 {
-                   Console.WriteLine("I should be updating");
+                    Console.WriteLine("[Update Book] " + e.TagReadData.EpcString + e.TagReadData.Time.ToString() + " -  " + e.TagReadData.Rssi);
                     connection.Open();
                     cmd = new MySqlCommand(query, connection);
              
                     cmd.Parameters.AddWithValue("@Book_RFID_TimeStamp", e.TagReadData.Time.ToString());
-                    cmd.Parameters.AddWithValue("@Book_RFID_RSSI", e.TagReadData.Rssi.ToString());
+                    cmd.Parameters.AddWithValue("@Book_RFID_RSSI", e.TagReadData.Rssi);
                     cmd.ExecuteNonQuery();
 
                     connection.Close();
-                    UpdateBookTable();
+                   
                 }
                 
             }

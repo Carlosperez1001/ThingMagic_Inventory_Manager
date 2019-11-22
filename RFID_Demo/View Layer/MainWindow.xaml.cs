@@ -12,6 +12,7 @@ using static RFID_Demo.Itembook;
 using System.Windows.Threading;
 using System.Collections;
 using System.IO;
+using System.Web;
 
 namespace RFID_Demo
 {
@@ -30,8 +31,7 @@ namespace RFID_Demo
         public bool toggelReader = false;
         public bool connectiveStatus = false;
         public ThingMagic.Reader reader;
-
-
+        
         public MainWindow()
         {
 
@@ -45,17 +45,11 @@ namespace RFID_Demo
 
             //Setup book datagrid
             UnregisteredDataGrid.ItemsSource = UnknownRFIDList.getUnknownRFIDList();    //Setup unregistered RFID datagrid
-            DataTable booksDT = new DataTable();
-            DBHelper.UpdateBookTable();
-
-            booksDT = DBHelper.GetDT();
+         
 
             dg_BookTable.ItemsSource = BookListing.getBookList();
 
             loadBook();
-
-
-
 
 
             //Debugging test data
@@ -123,11 +117,13 @@ namespace RFID_Demo
                 btn_ToggleRead.Content = "Stop";
                 toggelReader = true;
                 ReadBatchRFID();
+                updateConnectiveStatus();
             }
             else
             {
                 btn_ToggleRead.Content = "Start Reading";
                 toggelReader = false;
+                updateConnectiveStatus();
             }
         }
 
@@ -196,6 +192,38 @@ namespace RFID_Demo
                 Console.WriteLine(ex);
             }
         }
+        public void UpdateUnkownRFID_DG(bool CheckUknown)
+        {
+            if (CheckUknown == true)
+                Console.WriteLine("Updata Unknown dg");
+            {//Marked as "Unknown" update infomation.
+
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        UnregisteredDataGrid.Items.Refresh();   //Update UI 
+                    });
+
+                }
+            }
+        }
+        public void UpdateBook_DG(bool Check_Book)
+        {
+
+            if (Check_Book == true)
+            {
+                Console.WriteLine("Updata book dg");
+                //Marked as "Unknown" update infomation.
+
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        dg_BookTable.Items.Refresh();   //Update UI 
+                    });
+                }
+
+            }
+        }
 
 
 
@@ -221,7 +249,7 @@ namespace RFID_Demo
                     string str = "1,1";
                     antennaList = Array.ConvertAll(str.Split(','), int.Parse);     //Select antenna 1
 
-                    SimpleReadPlan plan = new SimpleReadPlan(antennaList, TagProtocol.GEN2, null, null, 0);  //Create "Plan" for module configuration 
+                    SimpleReadPlan plan = new SimpleReadPlan(antennaList, TagProtocol.GEN2, null, null, 1000);  //Create "Plan" for module configuration 
                     reader.ParamSet("/reader/read/plan", plan);
 
                     connectiveStatus = true;
@@ -257,34 +285,44 @@ namespace RFID_Demo
 
         private void OnTagRead(Object sender, TagReadDataEventArgs e)
         {
-            if (toggelReader == false)
+            if (this.toggelReader == false)
             {
                 return;
             }
-           
+
             bool check_Unknown = false;
+            bool check_Book = false;
 
             System.Windows.Application.Current.Dispatcher.BeginInvoke(
-             DispatcherPriority.Background,
+            DispatcherPriority.Background,
             new Action(() =>
+
             {
-                check_Unknown = UnknownRFIDList.CheckList(e);   //[Bool] Check if tag is saved already.
-                if (check_Unknown == true)                      //Marked as "Unknown" update infomation.
-                {
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        UnregisteredDataGrid.Items.Refresh();   //Update UI 
-                    });
+                check_Book = BookListing.CheckList(e);   //[Bool] Check if tag is saved already.
+                UpdateBook_DG(check_Book);
+
+
+         
                 
-                }
             }));
 
-            
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(
+            DispatcherPriority.Background,
+            new Action(() =>
+
+            {
+               
+
+
+                check_Unknown = UnknownRFIDList.CheckList(e);   //[Bool] Check if tag is saved already.
+                UpdateUnkownRFID_DG(check_Unknown);
+
+            }));
+
         }
 
 
     }
-
 }
 
 

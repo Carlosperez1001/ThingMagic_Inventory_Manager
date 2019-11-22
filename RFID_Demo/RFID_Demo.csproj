@@ -84,7 +84,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Helper\DBHelper.cs" />
+    <Compile Include="DB Helper\DBHelper.cs" />
     <Compile Include="Objects\Itembook.cs" />
     <Compile Include="Objects\UnknownRFID.cs" />
     <Compile Include="View Layer\MainWindow.xaml.cs">

@@ -48,13 +48,9 @@ namespace RFID_Demo
                 //CheckInput
                 DBHelper.addBookQuery(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imageData);
                 BookListing.addBookItem(selectedItem.EPC, selectedItem.timeStamp, selectedItem.RSSI, tbox_BookTitle.Text, tbox_Autor.Text, cbox_Genre.Text, imageData);
-                BookListing.printBookList();
-                this.Close(); 
+                this.Close();  //Close this window when done.
             }
-            //Close this window when donef
-
-
-
+           
         }
         private bool CheckInput(){
             if (tbox_BookTitle.Text == null)

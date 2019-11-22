@@ -35,26 +35,28 @@
 
         </Grid>
 
-
+    
 
         <Grid Grid.Column="1" Background="Beige" Margin="5,0,0,0">
-            <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" ItemsSource="{Binding}" AutoGenerateColumns="False">
+            <DataGrid x:Name="dg_BookTable" Margin="18,105,10,47" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Book Title" Binding="{Binding Title }"/>
-                    <DataGridTextColumn Header="Book Autor" Binding="{Binding Autor }"/>
+                    <DataGridTextColumn Header="Book Title" Width="120" Binding="{Binding Title }"/>
+                    <DataGridTextColumn Header="Book Autor" Width="110" Binding="{Binding Autor }"/>
                   
-                    <DataGridTemplateColumn Header="Image" Width="100" IsReadOnly="True">
+                    <DataGridTemplateColumn Header="Image" Width="120" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Image x:Name="img_Book" Source="{Binding Image }"/>
+                                <Image  Width="100" Height="120" x:Name="img_Book" Source="{Binding Image }"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Genre" Binding="{Binding Genre }"/>
+                    <DataGridTextColumn Header="Genre"  Binding="{Binding Genre }"/>
+                    <DataGridTextColumn Header="RSSI"  Binding="{Binding RSSI }"/>
+                    <DataGridTextColumn Header="TimeStamp" Binding="{Binding timeStamp }"/>
                     <DataGridTextColumn Header="EPC" Binding="{Binding EPC }"/>
 
-                    <DataGridTextColumn Header="TimeStamp" Binding="{Binding timeStamp }"/>
-                    <DataGridTextColumn Header="RSSI" Binding="{Binding RSSI }"/>
+                   
+                   
                 </DataGrid.Columns>
            
             </DataGrid>

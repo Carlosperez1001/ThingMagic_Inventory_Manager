@@ -20,12 +20,15 @@ namespace RFID_Demo
         public string _timeStamp;
         public string _RSSI;
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public UnknownRFID(String EPC, String timeStamp, String RSSI)
         {
             this.RSSI = RSSI;
             this.EPC = EPC;
             this.timeStamp = timeStamp;
-
         }
         public string EPC
         {
@@ -77,9 +80,6 @@ namespace RFID_Demo
             /// <summary>
             /// 
             /// </summary>
-            /// <param name="EPC"></param>
-            /// <param name="timeStamp"></param>
-            /// <param name="RSSI"></param>
             public static void addUnknownRFIDItem(String EPC, String timeStamp, String RSSI)
             {
 
@@ -90,11 +90,9 @@ namespace RFID_Demo
             /// <summary>
             /// 
             /// </summary>
-            /// <param name="selectedItem"></param>
             public static void RemoveUnknownRFIDItem(UnknownRFID selectedItem)
             {
                 UnknownList.Remove(UnknownList.Where(i => i.EPC == selectedItem.EPC).Single());
-
             }
 
 
@@ -104,14 +102,11 @@ namespace RFID_Demo
             public static void RemoveALL()
             {
                 UnknownList.Clear();
-
             }
 
             /// <summary>
             /// 
             /// </summary>
-            /// <param name="e"></param>
-            /// <returns></returns>
             public static bool CheckList(TagReadDataEventArgs e)
             {
                 //Check dt if EPC already exist. 
@@ -119,8 +114,6 @@ namespace RFID_Demo
                 {
                     return false;
                 }
-
-                 
 
                 if (UnknownList.Any(p => p.EPC == e.TagReadData.EpcString))
                 {

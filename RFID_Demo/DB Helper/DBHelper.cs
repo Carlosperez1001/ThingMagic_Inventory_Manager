@@ -17,7 +17,6 @@ namespace RFID_Demo
 
     public static class DBHelper
     {
-
         private static MySqlConnection connection;
         private static MySqlCommand cmd = null;
         private static MySqlDataAdapter da;
@@ -34,8 +33,7 @@ namespace RFID_Demo
         {
             try
             {
-              
-
+                //Setup AWS RDS connection for the MySQL DB
                 MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder();
                 builder.Server = "aws-instance.chisnihuqkko.us-east-2.rds.amazonaws.com";
                 builder.UserID = "admin";
@@ -44,8 +42,8 @@ namespace RFID_Demo
                 builder.SslMode = MySqlSslMode.None;
 
                 connection = new MySqlConnection(builder.ToString());
-              
-                MessageBox.Show("Connected");
+
+                Console.WriteLine("[DB Connection attempted]");
             }
             catch (Exception ex)
             {
@@ -70,29 +68,23 @@ namespace RFID_Demo
                     cmd = new MySqlCommand(query, connection);
                     da = new MySqlDataAdapter(cmd);
                     ds = new DataSet();
-
                     da.Fill(dt);
 
                     connection.Close();
                 }
             }
-
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-
             }
         }
-       
+
 
         /// <summary>
         /// 
         /// </summary>
         public static void addBookQuery(string EPC, string TimeStamp, string RSSI, string Book_Title, string Book_Autor, string Book_Genre, Byte[] source)
         {
-            MemoryStream ms = new MemoryStream();
-            byte[] img = ms.ToArray();
-
             String query = "INSERT INTO Book (Book_id, Book_Title, Book_Autor, Book_Genre, Book_Image, Book_RFID_EPC, Book_RFID_TimeStamp, Book_RFID_RSSI) " +
                 "VALUE(@Book_id, @Book_Title, @Book_Autor, @Book_Genre, @Book_Image, @Book_RFID_EPC, @Book_RFID_TimeStamp, @Book_RFID_RSSI)";
             try
@@ -111,7 +103,6 @@ namespace RFID_Demo
                     cmd.Parameters.Add("@Book_RFID_TimeStamp", MySqlDbType.VarChar, 255);
                     cmd.Parameters.Add("@Book_RFID_RSSI", MySqlDbType.VarChar, 255);
 
-
                     cmd.Parameters["@Book_id"].Value = Guid.NewGuid().ToString();
                     cmd.Parameters["@Book_Title"].Value = Book_Title;
                     cmd.Parameters["@Book_Autor"].Value = Book_Autor;
@@ -127,13 +118,15 @@ namespace RFID_Demo
                             "Summary \n" +
                             "");
                     }
+
                     connection.Close();
+
                     UpdateBookTable();
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Database is disconnected. Can not add item.");
-
             }
 
         }
@@ -144,42 +137,44 @@ namespace RFID_Demo
         /// </summary>
         public static void RemoveBookQuery(string EPC)
         {
-            
+
             String query = "DELETE FROM Book Where Book_RFID_EPC = '" + EPC + "'";
             if (connection != null && connection.State == ConnectionState.Closed)
             {
                 connection.Open();
                 cmd = new MySqlCommand(query, connection);
-
                 if (cmd.ExecuteNonQuery() == 1)
                 {
-                    MessageBox.Show("Item with the EPC:"+ EPC +" was removed from the database.");
+                    MessageBox.Show("Item with the EPC:" + EPC + " was removed from the database.");
                 }
                 connection.Close();
                 UpdateBookTable();
             }
         }
 
-        public static void updateBook(TagReadDataEventArgs e) {
-            String query = "Update Book SET Book_RFID_TimeStamp = @Book_RFID_TimeStamp, Book_RFID_RSSI = @Book_RFID_RSSI where Book_RFID_EPC = '" + e.TagReadData.EpcString+"'";
-            try { 
- 
+        public static void updateBook(TagReadDataEventArgs e)
+        {
+            String query = "Update Book SET Book_RFID_TimeStamp = @Book_RFID_TimeStamp, Book_RFID_RSSI = @Book_RFID_RSSI where Book_RFID_EPC = '" + e.TagReadData.EpcString + "'";
+            try
+            {
+
                 if (connection != null && connection.State == ConnectionState.Closed)
                 {
                     Console.WriteLine("[Update Book] " + e.TagReadData.EpcString + e.TagReadData.Time.ToString() + " -  " + e.TagReadData.Rssi);
                     connection.Open();
                     cmd = new MySqlCommand(query, connection);
-             
+
                     cmd.Parameters.AddWithValue("@Book_RFID_TimeStamp", e.TagReadData.Time.ToString());
                     cmd.Parameters.AddWithValue("@Book_RFID_RSSI", e.TagReadData.Rssi);
                     cmd.ExecuteNonQuery();
 
                     connection.Close();
-                   
+
                 }
-                
+
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex);
             }
 
@@ -189,10 +184,10 @@ namespace RFID_Demo
         /// <summary>
         /// 
         /// </summary>
-        /// <returns></returns>
-        public static DataTable GetDT() {
+        public static DataTable GetDT()
+        {
 
-            return dt ;
+            return dt;
         }
 
     }

@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using System.Collections;
 using System.IO;
 using System.Web;
+using Application = System.Windows.Application;
 
 namespace RFID_Demo
 {
@@ -31,48 +32,31 @@ namespace RFID_Demo
         public bool toggelReader = false;
         public bool connectiveStatus = false;
         public ThingMagic.Reader reader;
-        
+
         public MainWindow()
         {
 
-
+            //Create WPF componects 
             InitializeComponent();
-
+            //Attempt connection with DB.
             DBHelper.EstablishConnection();
 
-
-            DateTime TodayDates = DateTime.Now;
-
-            //Setup book datagrid
-            UnregisteredDataGrid.ItemsSource = UnknownRFIDList.getUnknownRFIDList();    //Setup unregistered RFID datagrid
-         
-
+            //Setup both datagrids
+            UnregisteredDataGrid.ItemsSource = UnknownRFIDList.getUnknownRFIDList();
             dg_BookTable.ItemsSource = BookListing.getBookList();
 
+            //Load all books with the DB
             loadBook();
 
+            // Test data 
+            // DateTime TodayDates = DateTime.Now;
+            // UnknownRFIDList.addUnknownRFIDItem("2313213123213222", TodayDates.ToString(), "-24");
 
-            //Debugging test data
-            UnknownRFIDList.addUnknownRFIDItem("2313213123213222", TodayDates.ToString(), "-24");
-
-
-
-            //Set up UI
+            //Setup UI 
             updateConnectiveStatus();
         }
 
 
-
-        public static System.Drawing.Image byteArrayToImage(byte[] byteArrayIn)
-        {
-            if (byteArrayIn != null || byteArrayIn.Length != 0)
-            {
-                MemoryStream ms = new MemoryStream(byteArrayIn);
-                System.Drawing.Image returnImage = System.Drawing.Image.FromStream(ms);
-                return returnImage;
-            }
-            return null;
-        }
 
         //------------ UI, Button, Events, General Purpose Functions Section ------------//
 
@@ -106,28 +90,37 @@ namespace RFID_Demo
 
 
         /// <summary>
-        /// 
+        /// Once a connection with the M6e module is established "(connectiveStatus == true)", the application can start scanning.
+        /// When "btn_StartScannin" is clicked, update UI and change the bool "toggelReader" 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void btn_StartScanning_Click(object sender, RoutedEventArgs e)
         {
-            if (toggelReader == false)
+            if (toggelReader == false && connectiveStatus == true)
             {
                 btn_ToggleRead.Content = "Stop";
                 toggelReader = true;
                 ReadBatchRFID();
                 updateConnectiveStatus();
             }
-            else
+            else if (toggelReader == true && connectiveStatus == true)
             {
                 btn_ToggleRead.Content = "Start Reading";
                 toggelReader = false;
                 updateConnectiveStatus();
             }
+            else
+            {
+                //connectiveStatus == false
+                MessageBox.Show("M6e is not connected properly. Please select the correct COM port that connects the M6e module");
+            }
         }
 
 
+        /// <summary>
+        /// Configure "Usb Virtual COM ports"
+        /// Troubleshot - Check device manager with M6e plugged in & powered
+        /// When "btnConnect" is clicked, the application will attempt a connection with the M6e
+        /// </summary>
         private void onClick_btnConnect(object sender, RoutedEventArgs e)
         {
             COM_Port = cbox_COM.SelectedIndex + 1;
@@ -135,9 +128,12 @@ namespace RFID_Demo
             ConnectRFID();
         }
 
+        /// <summary>
+        ///  Adding an Unregistered RFID tag when it is seleted in the datagrid.
+        ///  Open up "AddItem" form.
+        /// </summary>
         private void btn_AddItem_Click(object sender, RoutedEventArgs e)
         {
-
             UnknownRFID selectedItem = (UnknownRFID)UnregisteredDataGrid.SelectedItem;
             if (selectedItem != null)
             {
@@ -154,12 +150,13 @@ namespace RFID_Demo
 
 
         /// <summary>
-        /// 
+        /// UI function to clear datagrid.
         /// </summary>
         private void btn_ClearUnregistered_click(object sender, RoutedEventArgs e)
         {
             UnknownRFIDList.RemoveALL();
         }
+
 
         /// <summary>
         /// 
@@ -170,62 +167,46 @@ namespace RFID_Demo
             try
             {
                 Itembook rows = dg_BookTable.SelectedItem as Itembook;
-
-
                 if (rows != null)
                 {
-
                     Console.WriteLine(rows.EPC);
                     DBHelper.RemoveBookQuery(rows.EPC.ToString());
                     loadBook();
                 }
-
                 else
                 {
                     MessageBox.Show("Please select an item to remove");
                 }
-
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Please select an item to remove");
                 Console.WriteLine(ex);
             }
         }
+
+
         public void UpdateUnkownRFID_DG(bool CheckUknown)
         {
             if (CheckUknown == true)
-                Console.WriteLine("Updata Unknown dg");
             {//Marked as "Unknown" update infomation.
-
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        UnregisteredDataGrid.Items.Refresh();   //Update UI 
+                    UnregisteredDataGrid.Items.Refresh();   //Update UI 
                     });
 
-                }
             }
+
         }
         public void UpdateBook_DG(bool Check_Book)
         {
-
             if (Check_Book == true)
             {
-                Console.WriteLine("Updata book dg");
-                //Marked as "Unknown" update infomation.
-
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        dg_BookTable.Items.Refresh();   //Update UI 
+                    dg_BookTable.Items.Refresh();   //Update UI 
                     });
-                }
-
             }
         }
-
-
 
         //----------RFID Module Functions Section----------//
 
@@ -240,20 +221,20 @@ namespace RFID_Demo
             {
                 try
                 {
-                    string uri = "eapi:///com" + COM_Port;                        //Configurations of COMs "USB Port"
-                    reader = ThingMagic.Reader.Create(uri);                       //Create Reader object
+                    string uri = "eapi:///com" + COM_Port;                                              //Configurations of COMs "USB Port"
+                    reader = ThingMagic.Reader.Create(uri);                                             //Create Reader object
                     reader.Connect();
                     reader.ParamSet("/reader/region/id", ThingMagic.Reader.Region.NA);
 
                     int[] antennaList = null;
                     string str = "1,1";
-                    antennaList = Array.ConvertAll(str.Split(','), int.Parse);     //Select antenna 1
+                    antennaList = Array.ConvertAll(str.Split(','), int.Parse);                                   //Select antenna 1
 
                     SimpleReadPlan plan = new SimpleReadPlan(antennaList, TagProtocol.GEN2, null, null, 1000);  //Create "Plan" for module configuration 
                     reader.ParamSet("/reader/read/plan", plan);
 
                     connectiveStatus = true;
-                    updateConnectiveStatus();                                       //Update UI
+                    updateConnectiveStatus();                                                                    //Update UI
                 }
                 catch (System.IO.IOException e)
                 {
@@ -263,6 +244,10 @@ namespace RFID_Demo
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void ReadBatchRFID()
         {
             if (connectiveStatus == true && toggelReader == true)
@@ -283,41 +268,56 @@ namespace RFID_Demo
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnTagRead(Object sender, TagReadDataEventArgs e)
         {
-            if (this.toggelReader == false)
-            {
-                return;
-            }
-
+           
             bool check_Unknown = false;
             bool check_Book = false;
 
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-            DispatcherPriority.Background,
-            new Action(() =>
-
+            try
             {
-                check_Book = BookListing.CheckList(e);   //[Bool] Check if tag is saved already.
-                UpdateBook_DG(check_Book);
+                Application.Current.Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() =>
+                {
+                    if (toggelReader == false)
+                    {
+                        Console.WriteLine("Read Booklisting End");
+                        reader.StopReading();
+                        return;
+                    }
+                    check_Unknown = UnknownRFIDList.CheckList(e);
+                    UpdateUnkownRFID_DG(check_Unknown);
 
 
-         
-                
-            }));
+                }));
 
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(
-            DispatcherPriority.Background,
-            new Action(() =>
+                Application.Current.Dispatcher.BeginInvoke(
+              DispatcherPriority.Background,
+              new Action(() =>
+              {
+                  if (toggelReader == false)
+                  {
+                      Console.WriteLine("Read Booklisting End");
+                      reader.StopReading();
+                      return;
+                  }
 
-            {
-               
+                  check_Book = BookListing.CheckList(e);
+                  UpdateBook_DG(check_Book);
+              }));
+            }
+            catch(Exception ex) {
+                Console.WriteLine(ex);
+            }
 
 
-                check_Unknown = UnknownRFIDList.CheckList(e);   //[Bool] Check if tag is saved already.
-                UpdateUnkownRFID_DG(check_Unknown);
-
-            }));
 
         }
 

@@ -121,6 +121,10 @@ namespace RFID_Demo
                     var index = UnknownList.IndexOf(list);
                     UnknownList[index].timeStamp = e.TagReadData.Time.ToString();
                     UnknownList[index].RSSI = e.TagReadData.Rssi.ToString();
+                  
+                 // double distance =  Math.Pow((-30 - Double.Parse(UnknownList[index].RSSI)) / (10 * 2), 10);
+                 // UnknownList[index].RSSI = distance.ToString();
+
                     Console.WriteLine("[Update Unknown Tag] "  + e.TagReadData.EpcString + e.TagReadData.Time.ToString() + " -  " + e.TagReadData.Rssi);
                     return true;
                 }

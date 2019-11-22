@@ -221,11 +221,20 @@ namespace RFID_Demo
             {
                 try
                 {
+
+                    //Check reading power settings
+                    
                     string uri = "eapi:///com" + COM_Port;                                              //Configurations of COMs "USB Port"
                     reader = ThingMagic.Reader.Create(uri);                                             //Create Reader object
                     reader.Connect();
                     reader.ParamSet("/reader/region/id", ThingMagic.Reader.Region.NA);
+                    
+                    int readPowerMax = (int)reader.ParamGet("/reader/radio/powerMax");
+                    int readPowerMin = (int)reader.ParamGet("/reader/radio/powerMin");
 
+                    Console.WriteLine("Max= " + readPowerMax);
+                    Console.WriteLine("Min= " + readPowerMin);
+                    reader.ParamSet("/reader/radio/readPower", 2000);
                     int[] antennaList = null;
                     string str = "1,1";
                     antennaList = Array.ConvertAll(str.Split(','), int.Parse);                                   //Select antenna 1
@@ -272,8 +281,6 @@ namespace RFID_Demo
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void OnTagRead(Object sender, TagReadDataEventArgs e)
         {
            
@@ -294,8 +301,6 @@ namespace RFID_Demo
                     }
                     check_Unknown = UnknownRFIDList.CheckList(e);
                     UpdateUnkownRFID_DG(check_Unknown);
-
-
                 }));
 
                 Application.Current.Dispatcher.BeginInvoke(
@@ -316,11 +321,8 @@ namespace RFID_Demo
             catch(Exception ex) {
                 Console.WriteLine(ex);
             }
-
-
-
+          
         }
-
 
     }
 }
